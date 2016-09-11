@@ -1,5 +1,6 @@
 package com.conjugategames.everestservice;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -16,6 +17,8 @@ public class MainActivity extends AppCompatActivity {
     Button startButton;
     Button stopButton;
 
+    public static Activity activity;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -23,14 +26,24 @@ public class MainActivity extends AppCompatActivity {
 
         startButton = (Button) findViewById(R.id.button_start);
         stopButton = (Button) findViewById(R.id.button_stop);
+        activity = this;
 
         startButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.d("EVERESTSERVICE","Starting EverestService");
+                Log.d("EVEREST","calling startService(new Intent(MainActivity.this, EverestService.class))");
                 startService(new Intent(MainActivity.this, EverestService.class));
             }
         });
+
+        stopButton.setOnClickListener((new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                Log.d("EVEREST","calling stopService((new Intent(MainActivity.this, EverestService.class)))");
+                stopService((new Intent(MainActivity.this, EverestService.class)));
+            }
+        }));
 
 
 

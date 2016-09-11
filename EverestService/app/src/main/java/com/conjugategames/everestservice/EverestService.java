@@ -1,6 +1,8 @@
 package com.conjugategames.everestservice;
 
 import android.app.Service;
+import android.bluetooth.BluetoothDevice;
+import android.bluetooth.BluetoothSocket;
 import android.content.Intent;
 import android.os.Handler;
 import android.os.IBinder;
@@ -8,13 +10,14 @@ import android.support.annotation.Nullable;
 import android.util.Log;
 
 import com.harman.everestelite.Bluetooth;
+import com.harman.everestelite.BluetoothListener;
 
 import java.io.IOException;
 
 /**
  * Created by steven on 9/10/16.
  */
-public class EverestService extends Service {
+public class EverestService extends Service implements BluetoothListener {
 
     @Nullable
     @Override
@@ -23,6 +26,7 @@ public class EverestService extends Service {
     }
 
     private final Handler handler = new Handler();
+    private Bluetooth connector;
 
     private int numIntent;
 
@@ -56,10 +60,10 @@ public class EverestService extends Service {
     // When service is started
     @Override
     public int onStartCommand(Intent intent, int flags, int startid) {
-
+        Log.d("EVEREST", "onStartCommand()");
         try {
-            Log.d("EVERESTSERVICE","Starting service");
-            Bluetooth connector = new Bluetooth(new EverestBluetoothListener(null), null, true);
+            Log.d("EVEREST","Starting bluetooth");
+            connector = new Bluetooth(this, MainActivity.activity, true);
             connector.start();
         } catch (IOException e) {
             e.printStackTrace();
@@ -73,5 +77,43 @@ public class EverestService extends Service {
         return START_STICKY;
     }
 
+    @Override
+    public void onDestroy() {
+        // Cancel the persistent notification.
+        Log.d("EVEREST", "onDestroy(), closing bluetooth");
+        connector.close();
 
+    }
+
+
+    @Override
+    public void bluetoothAdapterChangedState(Bluetooth bluetooth, int i, int i1) {
+        Log.d("EVEREST", "bluetoothAdapterChangedState");
+    }
+
+    @Override
+    public void bluetoothDeviceBondStateChanged(Bluetooth bluetooth, BluetoothDevice bluetoothDevice, int i, int i1) {
+        Log.d("EVEREST", "bluetoothDeviceBondStateChanged");
+    }
+
+    @Override
+    public void bluetoothDeviceConnected(Bluetooth bluetooth, BluetoothDevice bluetoothDevice, BluetoothSocket bluetoothSocket) {
+        Log.d("EVEREST", "bluetoothDeviceConnected");
+    }
+
+    @Override
+    public void bluetoothDeviceDisconnected(Bluetooth bluetooth, BluetoothDevice bluetoothDevice) {
+        Log.d("EVEREST", "bluetoothDeviceDisconnected");
+    }
+
+    @Override
+    public void bluetoothDeviceDiscovered(Bluetooth bluetooth, BluetoothDevice bluetoothDevice) {
+        Log.d("EVEREST", "bluetoothDeviceDiscovered");
+
+    }
+
+    @Override
+    public void bluetoothDeviceFailedToConnect(Bluetooth bluetooth, BluetoothDevice bluetoothDevice, Exception e) {
+        Log.d("EVEREST", "bluetoothDeviceFailedToConnect");
+    }
 }
